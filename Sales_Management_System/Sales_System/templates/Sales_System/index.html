@@ -1,0 +1,176 @@
+{% extends 'Sales_System/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-10 mx-auto">
+        <h1 class="text-center mb-4">Products</h1>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <form method="get" action="{% url 'product_list' %}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" id="search-input" placeholder="Search products or categories..." value="{{ search_query }}">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
+                    </div>
+                    <div id="search-suggestions" class="list-group" style="position: absolute; z-index: 1000;"></div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            {% for product in page_obj %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if product.images.exists %}
+                    <div id="product-carousel-{{ product.id }}" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for image in product.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ product.product_name }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#product-carousel-{{ product.id }}" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#product-carousel-{{ product.id }}" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                    {% else %}
+                    <img src="{% static 'path/to/default/image.jpg' %}" class="card-img-top" alt="{{ product.product_name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.product_name }}</h5>
+                        <p class="card-text short-description">{{ product.description|truncatewords:30 }}</p>
+                        <p class="card-text full-description" style="display: none;">{{ product.description }}</p>
+                        <a href="javascript:void(0);" onclick="toggleDescription(this);">
+                            <span class="read-more-text">Read More</span>
+                            <span class="read-less-text" style="display: none;">Read Less</span>
+                        </a>
+                        <p class="card-text mt-3">Price: ₹{{ product.price }}</p>
+                        <p class="card-text">Category: {{ product.category.name }}</p>
+                        <a href="{% url 'enquiry_form' product.id %}" class="btn btn-primary">Enquire</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleDescription(element) {
+    const fullDescription = element.previousElementSibling;
+    const shortDescription = fullDescription.previousElementSibling;
+    const readMoreText = element.querySelector('.read-more-text');
+    const readLessText = element.querySelector('.read-less-text');
+    if (fullDescription.style.display === 'none') {
+        fullDescription.style.display = 'inline';
+        shortDescription.style.display = 'none';
+        readMoreText.style.display = 'none';
+        readLessText.style.display = 'inline';
+    } else {
+        fullDescription.style.display = 'none';
+        shortDescription.style.display = 'inline';
+        readMoreText.style.display = 'inline';
+        readLessText.style.display = 'none';
+    }
+}
+
+document.getElementById('search-input').addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const suggestionsContainer = document.getElementById('search-suggestions');
+    suggestionsContainer.innerHTML = '';
+
+    if (query.length > 2) {
+        fetch(`/search_suggestions/?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                data.suggestions.forEach(suggestion => {
+                    const item = document.createElement('a');
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = suggestion.name;
+                    item.href = `?search=${suggestion.name}`;
+                    suggestionsContainer.appendChild(item);
+                });
+            });
+    }
+});
+
+document.getElementById('search-input').addEventListener('keydown', function(event) {
+    const suggestionsContainer = document.getElementById('search-suggestions');
+    const activeItem = suggestionsContainer.querySelector('.active');
+    let nextItem;
+
+    if (event.key === 'ArrowDown') {
+        if (activeItem) {
+            nextItem = activeItem.nextElementSibling || suggestionsContainer.firstElementChild;
+            activeItem.classList.remove('active');
+        } else {
+            nextItem = suggestionsContainer.firstElementChild;
+        }
+        if (nextItem) {
+            nextItem.classList.add('active');
+        }
+        event.preventDefault();
+    } else if (event.key === 'ArrowUp') {
+        if (activeItem) {
+            nextItem = activeItem.previousElementSibling || suggestionsContainer.lastElementChild;
+            activeItem.classList.remove('active');
+        } else {
+            nextItem = suggestionsContainer.lastElementChild;
+        }
+        if (nextItem) {
+            nextItem.classList.add('active');
+        }
+        event.preventDefault();
+    } else if (event.key === 'Enter') {
+        if (activeItem) {
+            event.preventDefault();
+            window.location.href = activeItem.href;
+        }
+    }
+});
+</script>
+
+<style>
+    .read-more-text, .read-less-text {
+        color: blue;
+        cursor: pointer;
+    }
+
+    .list-group-item-action.active {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+{% endblock content %}

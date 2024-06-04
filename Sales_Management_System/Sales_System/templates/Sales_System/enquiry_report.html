@@ -1,0 +1,36 @@
+{% extends "Sales_System/base.html" %}
+{% load static %}
+
+{% block title %}Enquiry Report{% endblock title %}
+
+{% block content %}
+    <h1>Enquiry Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Enquiry Date</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Contact Person</th>
+                <th>Address</th>
+                <th>Quantity</th>
+                <th>Mobile Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enquiry in enquiries %}
+                <tr>
+                    <td>{{ enquiry.id }}</td>
+                    <td>{{ enquiry.enquiry_date|date }}</td>
+                    <td>{{ enquiry.product.product_name|safe }}</td>
+                    <td>{{ enquiry.product.category.name|safe }}</td>
+                    <td>{{ enquiry.contact_person|safe }}</td>
+                    <td>{{ enquiry.address|safe }}</td>
+                    <td>{{ enquiry.quantity }}</td>
+                    <td>{{ enquiry.mobile_number|safe }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}

@@ -1,0 +1,80 @@
+{% extends "Sales_System/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        {% if category %}
+            <h2>Products in {{ category.name }}</h2>
+        {% else %}
+            <h2>All Products</h2>
+        {% endif %}
+        {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if product.images.exists %}
+                    <div id="product-carousel-{{ product.id }}" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for image in product.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ product.product_name }}">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#product-carousel-{{ product.id }}" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#product-carousel-{{ product.id }}" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                    {% else %}
+                    <img src="{% static 'path/to/default/image.jpg' %}" class="card-img-top" alt="{{ product.product_name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.product_name }}</h5>
+                        <p class="card-text short-description">{{ product.description|truncatewords:30 }}</p>
+                        <p class="card-text full-description" style="display: none;">{{ product.description }}</p>
+                        <a href="javascript:void(0);" onclick="toggleDescription(this);">
+                            <span class="read-more-text">Read More</span>
+                            <span class="read-less-text" style="display: none;">Read Less</span>
+                        </a>
+                        <p class="card-text mt-3">Price: ₹{{ product.price }}</p>
+                        <p class="card-text">Category: {{ product.category.name }}</p>
+                        <a href="{% url 'enquiry_form' product.id %}" class="btn btn-primary">Enquire</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function toggleDescription(element) {
+    const fullDescription = element.previousElementSibling;
+    const shortDescription = fullDescription.previousElementSibling;
+    const readMoreText = element.querySelector('.read-more-text');
+    const readLessText = element.querySelector('.read-less-text');
+    if (fullDescription.style.display === 'none') {
+        fullDescription.style.display = 'inline';
+        shortDescription.style.display = 'none';
+        readMoreText.style.display = 'none';
+        readLessText.style.display = 'inline';
+    } else {
+        fullDescription.style.display = 'none';
+        shortDescription.style.display = 'inline';
+        readMoreText.style.display = 'inline';
+        readLessText.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+    .read-more-text, .read-less-text {
+        color: blue;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

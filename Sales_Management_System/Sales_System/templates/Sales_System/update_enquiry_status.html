@@ -1,0 +1,15 @@
+{% extends "Sales_System/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update Enquiry Status{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <h1>Update Enquiry Status</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Update Status</button>
+        </form>
+    </div>
+{% endblock content %}

@@ -1,0 +1,13 @@
+.custom-navbar .nav-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #0056b3;
+    background-color: #e2e6ea;
+    border-radius: 4px;
+    transition: all 0.3s ease-in-out;
+}

@@ -1,0 +1,49 @@
+{% extends 'Sales_System/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Enquirer Report{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Enquirer Report</h1>
+
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                {{ date_range_form.enquirer|as_crispy_field }}
+            </div>
+            <div class="col-md-3">
+                {{ date_range_form.start_date|as_crispy_field }}
+            </div>
+            <div class="col-md-3">
+                {{ date_range_form.end_date|as_crispy_field }}
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    {% if enquiries %}
+        {% for enquiry in enquiries %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><strong>Enquiry Date:</strong> {{ enquiry.enquiry_date }}</li>
+                        <li><strong>Product:</strong> {{ enquiry.product.product_name }}</li>
+                        <li><strong>Product Category:</strong> {{ enquiry.product_category.name }}</li>
+                        <li><strong>Amount:</strong> {{ enquiry.amount }}</li>
+                        <li><strong>Contact Person Name:</strong> {{ enquiry.contact_person_name }}</li>
+                        <li><strong>Address:</strong> {{ enquiry.address }}</li>
+                        <li><strong>Quantity:</strong> {{ enquiry.quantity }}</li>
+                        <li><strong>Mobile Number:</strong> {{ enquiry.mobile_number }}</li>
+                        <li><strong>Enquirer:</strong> {{ enquiry.enquirer.user.username }}</li>
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center">No enquiries found.</p>
+    {% endif %}
+</div>
+{% endblock content %}

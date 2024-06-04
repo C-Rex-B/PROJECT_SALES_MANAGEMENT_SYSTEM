@@ -1,0 +1,41 @@
+{% extends "Sales_System/base.html" %}
+
+{% block title %}Enquiry PDF{% endblock title %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Enquiry Details</h1>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th scope="row">Product</th>
+                    <td>{{ enquiry.product.product_name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Category</th>
+                    <td>{{ enquiry.product_category.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Amount</th>
+                    <td>{{ enquiry.amount }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Contact Person</th>
+                    <td>{{ enquiry.contact_person_name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Address</th>
+                    <td>{{ enquiry.address }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Quantity</th>
+                    <td>{{ enquiry.quantity }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mobile Number</th>
+                    <td>{{ enquiry.mobile_number }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

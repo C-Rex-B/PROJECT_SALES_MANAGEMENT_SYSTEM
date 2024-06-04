@@ -1,0 +1,38 @@
+{% extends 'Sales_System/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Enquiry Form{% endblock title %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h2 class="mb-4">Enquiry Form for {{ product.product_name }}</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.contact_person_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.address|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.quantity|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.mobile_number|as_crispy_field }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.amount|as_crispy_field }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Submit Enquiry</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
